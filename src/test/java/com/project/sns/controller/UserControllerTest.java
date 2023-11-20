@@ -3,6 +3,7 @@ package com.project.sns.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.sns.controller.request.UserJoinRequest;
 import com.project.sns.controller.request.UserLoginRequest;
+import com.project.sns.exception.ErrorCode;
 import com.project.sns.exception.SnsApplicationException;
 import com.project.sns.model.User;
 import com.project.sns.service.UserService;
@@ -25,13 +26,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc         mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper    objectMapper;
 
     @MockBean
-    private UserService userService;
+    private UserService     userService;
 
     @Test
     public void 회원가입() throws Exception {
@@ -41,9 +42,8 @@ public class UserControllerTest {
         when(userService.join(userName, password)).thenReturn(mock(User.class));
 
         mockMvc.perform(post("/api/v1/users/join")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    // TODO : add request body
-                    .content(objectMapper.writeValueAsBytes(new UserJoinRequest(userName, password)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new UserJoinRequest(userName, password)))
                 ).andDo(print())
                 .andExpect(status().isOk());
     }
@@ -53,11 +53,12 @@ public class UserControllerTest {
         String userName = "userName";
         String password = "password";
 
-        when(userService.join(userName, password)).thenThrow(new SnsApplicationException());
+        when(userService.join(userName, password)).thenThrow(
+                new SnsApplicationException(ErrorCode.DUPLICATED_USER_NAME, String.format("%s is duplicated", userName))
+        );
 
         mockMvc.perform(post("/api/v1/users/join")
                         .contentType(MediaType.APPLICATION_JSON)
-                        // TODO : add request body
                         .content(objectMapper.writeValueAsBytes(new UserJoinRequest(userName, password)))
                 ).andDo(print())
                 .andExpect(status().isConflict());
@@ -72,7 +73,6 @@ public class UserControllerTest {
 
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        // TODO : add request body
                         .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password)))
                 ).andDo(print())
                 .andExpect(status().isOk());
@@ -83,14 +83,13 @@ public class UserControllerTest {
         String userName = "userName";
         String password = "password";
 
-        when(userService.login(userName, password)).thenThrow(new SnsApplicationException());
+        when(userService.login(userName, password)).thenThrow(new SnsApplicationException(ErrorCode.USER_NOT_FOUND));
 
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        // TODO : add request body
                         .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password)))
                 ).andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -98,11 +97,10 @@ public class UserControllerTest {
         String userName = "userName";
         String password = "password";
 
-        when(userService.login(userName, password)).thenThrow(new SnsApplicationException());
+        when(userService.login(userName, password)).thenThrow(new SnsApplicationException(ErrorCode.INVALID_PASSWORD));
 
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        // TODO : add request body
                         .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password)))
                 ).andDo(print())
                 .andExpect(status().isUnauthorized());
