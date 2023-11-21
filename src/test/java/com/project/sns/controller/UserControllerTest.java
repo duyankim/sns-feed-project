@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.mock;
@@ -69,12 +70,12 @@ public class UserControllerTest {
         String userName = "userName";
         String password = "password";
 
-        when(userService.login(userName, password)).thenReturn("test_token");
+        when(userService.login(userName, password)).thenReturn("testToken");
 
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password)))
-                ).andDo(print())
+                        .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password))))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -87,12 +88,13 @@ public class UserControllerTest {
 
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password)))
-                ).andDo(print())
-                .andExpect(status().isUnauthorized());
+                        .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password))))
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     @Test
+    @WithAnonymousUser
     public void 로그인시_틀린_password를_입력할_경우_에러반환() throws Exception {
         String userName = "userName";
         String password = "password";
@@ -101,8 +103,8 @@ public class UserControllerTest {
 
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password)))
-                ).andDo(print())
+                        .content(objectMapper.writeValueAsBytes(new UserLoginRequest(userName, password))))
+                .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 }
