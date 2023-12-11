@@ -51,4 +51,19 @@ public class PostEntity {
     void updatedAt() {
         this.updatedAt = Timestamp.from(Instant.now());
     }
+
+    /**
+     * PostEntity (DB에 접근할 때 사용) 변환
+     * @param title
+     * @param body
+     * @param userEntity
+     * @return UserEntity
+     */
+    public static PostEntity of(String title, String body, UserEntity userEntity) {
+        PostEntity postEntity = new PostEntity();
+        postEntity.setTitle(title);
+        postEntity.setBody(body);
+        postEntity.setUser(userEntity);
+        return postEntity;
+    }
 }
