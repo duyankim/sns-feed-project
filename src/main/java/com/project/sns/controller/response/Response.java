@@ -30,4 +30,21 @@ public class Response<T> {
         // 응답 성공일 경우 결과가 각각 다르기 때문에 제네릭 사용
         return new Response<>("SUCCESS", result);
     }
+
+    public static <T> Response<Void> success() {
+        return new Response<Void>("SUCCESS", null);
+    }
+
+    public String toStream() {
+        if(result == null) {
+            return "{" +
+                    "\"resultCode\":" + "\"" + resultCode + "\"," +
+                    "\"result\":" + null +
+                    "}";
+        }
+        return "{" +
+                "\"resultCode\":" + "\"" + resultCode + "\"," +
+                "\"result\":"     + "\"" + result     + "\""  +
+                "}";
+    }
 }
