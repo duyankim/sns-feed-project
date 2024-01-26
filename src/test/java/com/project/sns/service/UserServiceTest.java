@@ -34,8 +34,9 @@ public class UserServiceTest {
     void 회원가입이_정상적으로_동작하는_경우() {
         String userName = "userName";
         String password = "password";
+        Integer userId = 1;
 
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, userId);
 
         // mocking
         when(userRepository.findByUserName(userName)).thenReturn(Optional.empty()); // userName으로 찾았을 때 없어야 함.
@@ -49,8 +50,9 @@ public class UserServiceTest {
     void 회원가입시_userName으로_회원가입한_유저가_이미_있는_경우() {
         String userName = "userName";
         String password = "password";
+        Integer userId = 1;
 
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, userId);
 
         // mocking
         when(userRepository.findByUserName(userName)).thenReturn(Optional.of(mock(UserEntity.class)));
@@ -65,8 +67,9 @@ public class UserServiceTest {
     void 로그인이_정상적으로_동작하는_경우() {
         String userName = "userName";
         String password = "password";
+        Integer userId = 1;
 
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, userId);
 
         // mocking
         when(userRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
@@ -91,8 +94,9 @@ public class UserServiceTest {
         String userName = "userName";
         String password = "password";
         String wrongPassword = "wrongPassword";
+        Integer userId = 1;
 
-        UserEntity fixture = UserEntityFixture.get(userName, password);
+        UserEntity fixture = UserEntityFixture.get(userName, password, userId);
 
         // mocking
         when(userRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
